@@ -1,0 +1,22 @@
+{
+  "name": "npm-workspaces-lsp",
+  "description": "npm workspaces auto-completion in package.json files",
+  "version": "0.0.1",
+  "author": "AkisArou",
+  "license": "MIT",
+  "engines": {
+    "node": "*"
+  },
+  "scripts": {
+    "build": "tsc"
+  },
+  "dependencies": {
+    "vscode-languageserver": "^9.0.1",
+    "vscode-languageserver-textdocument": "^1.0.11",
+    "typescript": "5.3.2",
+    "workspace-tools": "^0.36.3"
+  },
+  "devDependencies": {
+    "@types/node": "*"
+  }
+}
