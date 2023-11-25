@@ -1,7 +1,7 @@
 {
   "name": "npm-workspaces-lsp",
   "description": "npm workspaces auto-completion in package.json files",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "author": "AkisArou",
   "license": "MIT",
   "main": "dist/server.js",
