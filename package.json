@@ -4,11 +4,18 @@
   "version": "0.0.1",
   "author": "AkisArou",
   "license": "MIT",
+  "main": "dist/server.js",
+  "module": "dist/server.mjs",
+  "types": "dist/server.d.ts",
+  "bin": {
+    "npm-workspaces-lsp": "dist/server.js"
+  },
   "engines": {
     "node": "*"
   },
   "scripts": {
-    "build": "tsc"
+    "build": "tsup src/server.ts --format cjs,esm --dts",
+    "lint": "tsc"
   },
   "dependencies": {
     "vscode-languageserver": "^9.0.1",
@@ -17,6 +24,7 @@
     "workspace-tools": "^0.36.3"
   },
   "devDependencies": {
-    "@types/node": "*"
+    "@types/node": "*",
+    "tsup": "^8.0.1"
   }
 }
