@@ -2,18 +2,17 @@
 
 import {
   CompletionItem,
-  CompletionItemKind, InitializeParams,
+  CompletionItemKind,
+  InitializeParams,
   InitializeResult,
   ProposedFeatures,
   TextDocumentPositionParams,
   TextDocumentSyncKind,
   TextDocuments,
   createConnection
-} from 'vscode-languageserver/node';
+} from "vscode-languageserver/node";
 
-import {
-  TextDocument
-} from 'vscode-languageserver-textdocument';
+import { TextDocument } from "vscode-languageserver-textdocument";
 
 import * as tools from "workspace-tools";
 
@@ -21,9 +20,6 @@ import fs from "fs";
 import path from "path";
 
 type WorkspacesType = "npm-yarn" | "pnpm";
-
-// Create a connection for the server, using Node's IPC as a transport.
-// Also include all preview / proposed LSP features.
 
 const workspacesType: WorkspacesType | null = (() => {
   const workspaceRoot = tools.getWorkspaceRoot(process.cwd());
@@ -39,16 +35,18 @@ const workspacesType: WorkspacesType | null = (() => {
   );
 
   if ("workspaces" in parentPackageJSON) {
-    return "npm-yarn"
+    return "npm-yarn";
   }
 
-  const pnpmWorkspaceYamlExists = fs.existsSync(path.join(process.cwd(), "pnpm-workspace.yaml"))
+  const pnpmWorkspaceYamlExists = fs.existsSync(
+    path.join(process.cwd(), "pnpm-workspace.yaml")
+  );
 
   if (pnpmWorkspaceYamlExists) {
-    return "pnpm"
+    return "pnpm";
   }
 
-  return null
+  return null;
 })();
 
 if (workspacesType) {
@@ -56,11 +54,13 @@ if (workspacesType) {
 }
 
 function init() {
-  const packageProtocol = workspacesType === "npm-yarn" ? "*" : "workspace:*"
+  const packageProtocol = workspacesType === "npm-yarn" ? "*" : "workspace:*";
 
   const connection = createConnection(ProposedFeatures.all);
-  // Create a simple text document manager.
-  const documents: TextDocuments<TextDocument> = new TextDocuments(TextDocument);
+
+  const documents: TextDocuments<TextDocument> = new TextDocuments(
+    TextDocument
+  );
 
   connection.onInitialize((_: InitializeParams) => {
     const result: InitializeResult = {
@@ -68,7 +68,11 @@ function init() {
         textDocumentSync: TextDocumentSyncKind.Incremental,
         // Tell the client that this server supports code completion.
         completionProvider: {
-          resolveProvider: true
+          completionItem: {
+            labelDetailsSupport: true
+          },
+          triggerCharacters: undefined,
+          resolveProvider: false
         }
       }
     };
@@ -76,10 +80,9 @@ function init() {
     return result;
   });
 
-  // This handler provides the initial list of the completion items.
   connection.onCompletion(
     (_textDocumentPosition: TextDocumentPositionParams): CompletionItem[] => {
-      const workspaces = tools.getWorkspaces(process.cwd())
+      const workspaces = tools.getWorkspaces(process.cwd());
 
       return workspaces.map((w, idx) => ({
         label: w.name,
@@ -88,14 +91,11 @@ function init() {
         labelDetails: w.packageJson.description,
         data: idx,
         insertText: `"${w.name}": "${packageProtocol}"`
-      }))
+      }));
     }
   );
 
-  // Make the text document manager listen on the connection
-  // for open, change and close text document events
   documents.listen(connection);
 
-  // Listen on the connection
   connection.listen();
 }

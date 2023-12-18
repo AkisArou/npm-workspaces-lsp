@@ -1,21 +1,14 @@
 {
   "name": "npm-workspaces-lsp",
   "description": "npm workspaces auto-completion in package.json files",
-  "version": "0.0.4",
+  "version": "0.0.0",
   "author": "AkisArou",
   "license": "MIT",
-  "main": "dist/server.js",
-  "module": "dist/server.mjs",
-  "types": "dist/server.d.ts",
-  "bin": {
-    "npm-workspaces-lsp": "dist/server.js"
-  },
-  "engines": {
-    "node": "*"
-  },
+  "workspaces": [
+    "packages/**"
+  ],
   "scripts": {
-    "build": "tsup src/server.ts --format cjs,esm --dts",
-    "lint": "tsc"
+    "build-ls": "npm run build -w npm-workspaces-language-server"
   },
   "dependencies": {
     "vscode-languageserver": "^9.0.1",
@@ -24,7 +17,8 @@
     "workspace-tools": "^0.36.3"
   },
   "devDependencies": {
-    "@types/node": "*",
-    "tsup": "^8.0.1"
+    "@types/node": "18.x",
+    "tsup": "^8.0.1",
+    "prettier": "*"
   }
 }
