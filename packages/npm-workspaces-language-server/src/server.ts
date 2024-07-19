@@ -1,18 +1,17 @@
 #!/usr/bin/env node
 
 import {
-  CompletionItem,
-  CompletionItemKind,
-  InitializeParams,
-  InitializeResult,
-  ProposedFeatures,
-  TextDocumentPositionParams,
-  TextDocumentSyncKind,
-  TextDocuments,
-  createConnection
+	CompletionItemKind,
+	InitializeResult,
+	ProposedFeatures,
+	TextDocumentSyncKind,
+	TextDocuments,
+	createConnection,
 } from "vscode-languageserver/node";
 
 import { TextDocument } from "vscode-languageserver-textdocument";
+
+import YAML from "yaml";
 
 import * as tools from "workspace-tools";
 
@@ -21,81 +20,108 @@ import path from "path";
 
 type WorkspacesType = "npm-yarn" | "pnpm";
 
+const workspaceRoot = tools.getWorkspaceRoot(process.cwd());
+
 const workspacesType: WorkspacesType | null = (() => {
-  const workspaceRoot = tools.getWorkspaceRoot(process.cwd());
+	if (!workspaceRoot) {
+		return null;
+	}
 
-  if (!workspaceRoot) {
-    return null;
-  }
+	const parentPackageJSONPath = path.join(workspaceRoot, "package.json");
 
-  const parentPackageJSONPath = path.join(workspaceRoot, "package.json");
+	const parentPackageJSON = JSON.parse(
+		fs.readFileSync(parentPackageJSONPath, "utf-8"),
+	);
 
-  const parentPackageJSON = JSON.parse(
-    fs.readFileSync(parentPackageJSONPath, "utf-8")
-  );
+	if ("workspaces" in parentPackageJSON) {
+		return "npm-yarn";
+	}
 
-  if ("workspaces" in parentPackageJSON) {
-    return "npm-yarn";
-  }
+	const pnpmWorkspaceYamlExists = fs.existsSync(
+		path.join(process.cwd(), "pnpm-workspace.yaml"),
+	);
 
-  const pnpmWorkspaceYamlExists = fs.existsSync(
-    path.join(process.cwd(), "pnpm-workspace.yaml")
-  );
+	if (pnpmWorkspaceYamlExists) {
+		return "pnpm";
+	}
 
-  if (pnpmWorkspaceYamlExists) {
-    return "pnpm";
-  }
-
-  return null;
+	return null;
 })();
 
-if (workspacesType) {
-  init();
+if (!workspacesType) {
+	throw new Error("Not using workspaces");
 }
 
-function init() {
-  const packageProtocol = workspacesType === "npm-yarn" ? "*" : "workspace:*";
+const dependencies = (() => {
+	if (!workspaceRoot || workspacesType === "npm-yarn") {
+		return [];
+	}
 
-  const connection = createConnection(ProposedFeatures.all);
+	const pnpmWorkspacesFilePath = path.join(
+		workspaceRoot,
+		"pnpm-workspace.yaml",
+	);
 
-  const documents: TextDocuments<TextDocument> = new TextDocuments(
-    TextDocument
-  );
+	const file = fs.readFileSync(pnpmWorkspacesFilePath, "utf8");
+	const pnpmWorkspacesFile = YAML.parse(file);
 
-  connection.onInitialize((_: InitializeParams) => {
-    const result: InitializeResult = {
-      capabilities: {
-        textDocumentSync: TextDocumentSyncKind.Incremental,
-        // Tell the client that this server supports code completion.
-        completionProvider: {
-          completionItem: {
-            labelDetailsSupport: true
-          },
-          triggerCharacters: undefined,
-          resolveProvider: false
-        }
-      }
-    };
+	if (!pnpmWorkspacesFile.catalog) {
+		return [];
+	}
 
-    return result;
-  });
+	return Object.keys(pnpmWorkspacesFile.catalog);
+})();
 
-  connection.onCompletion(
-    (_textDocumentPosition: TextDocumentPositionParams): CompletionItem[] => {
-      const workspaces = tools.getWorkspaces(process.cwd());
+const completionItems = (() => {
+	const workspaces = tools.getWorkspaces(process.cwd());
 
-      return workspaces.map((w, idx) => ({
-        label: w.name,
-        kind: CompletionItemKind.File,
-        detail: w.path,
-        labelDetails: w.packageJson.description,
-        data: idx,
-        insertText: `"${w.name}": "${packageProtocol}"`
-      }));
-    }
-  );
+	const packageProtocol = workspacesType === "npm-yarn" ? "*" : "workspace:*";
 
-  documents.listen(connection);
+	const workspaceItems = workspaces.map((w) => ({
+		label: `"${w.name}"`,
+		kind: CompletionItemKind.Module,
+		data: w.name,
+		insertText: `"${w.name}": "${packageProtocol}"`,
+	}));
 
-  connection.listen();
-}
+	const dependenciesItems = dependencies.map((key) => {
+		return {
+			label: `"${key}"`,
+			kind: CompletionItemKind.Module,
+			data: key,
+			insertText: `"${key}": "catalog:"`,
+		};
+	});
+
+	return [...workspaceItems, ...dependenciesItems];
+})();
+
+const connection = createConnection(ProposedFeatures.all);
+
+const documents = new TextDocuments(TextDocument);
+
+documents.listen(connection);
+
+connection.onInitialize((_) => {
+	const result: InitializeResult = {
+		capabilities: {
+			textDocumentSync: TextDocumentSyncKind.Full,
+			inlineCompletionProvider: true,
+			completionProvider: {
+				// triggerCharacters: ["@"],
+				completionItem: {
+					// labelDetailsSupport: true,
+				},
+				resolveProvider: true,
+			},
+		},
+	};
+
+	return result;
+});
+
+connection.onCompletion((_textDocumentPosition) => {
+	return completionItems;
+});
+
+connection.listen();
