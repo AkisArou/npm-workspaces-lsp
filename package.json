@@ -1,10 +1,12 @@
 {
 	"name": "npm-workspaces-lsp",
 	"description": "npm workspaces auto-completion in package.json files",
-	"version": "0.0.0",
+	"version": "0.1.0",
 	"author": "AkisArou",
 	"license": "MIT",
-	"workspaces": ["packages/**"],
+	"workspaces": [
+		"packages/**"
+	],
 	"scripts": {
 		"build-ls": "npm run build -w npm-workspaces-language-server"
 	},
