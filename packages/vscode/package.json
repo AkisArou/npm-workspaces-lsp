@@ -1,0 +1,48 @@
+{
+  "name": "npm-workspaces-autocompletion-vscode",
+  "displayName": "npm workspaces autocompletion",
+  "description": "npm, yarn and pnpm workspaces auto-completion in package.json files",
+  "version": "0.0.1",
+  "author": "AkisArou <akisarou90@gmail.com>",
+  "license": "MIT",
+  "main": "./dist/extension.js",
+  "engines": {
+    "vscode": "^1.96.0"
+  },
+  "categories": [
+    "lsp"
+  ],
+  "scripts": {
+    "vscode:prepublish": "npm run package",
+    "compile": "npm run check-types && node esbuild.mjs",
+    "watch:esbuild": "node esbuild.mjs --watch",
+    "watch:tsc": "tsc --noEmit --watch --project tsconfig.json",
+    "package": "npm run check-types && node esbuild.mjs --production",
+    "check-types": "tsc --noEmit"
+  },
+  "dependencies": {
+    "npm-workspaces-language-server": "workspace:*",
+    "vscode-languageclient": "catalog:"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "typescript": "catalog:",
+    "esbuild": "catalog:"
+  },
+  "activationEvents": [
+    "onLanguage:json"
+  ],
+  "contributes": {
+    "configuration": {
+      "type": "object",
+      "title": "npm-workspaces configuration",
+      "properties": {
+        "npm-workspaces.enable": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable npm-workspaces extension"
+        }
+      }
+    }
+  }
+}

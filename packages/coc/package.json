@@ -1,0 +1,45 @@
+{
+  "name": "npm-workspaces-autocompletion-coc",
+  "description": "npm, yarn and pnpm workspaces auto-completion in package.json files",
+  "version": "0.0.1",
+  "author": "AkisArou <akisarou90@gmail.com>",
+  "license": "MIT",
+  "main": "dist/extension.js",
+  "engines": {
+    "coc": "^0.0.82"
+  },
+  "keywords": [
+    "coc.nvim",
+    "npm",
+    "monorepo"
+  ],
+  "scripts": {
+    "build": "node esbuild.mjs",
+    "watch": "node esbuild.mjs --watch"
+  },
+  "dependencies": {
+    "npm-workspaces-language-server": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "typescript": "catalog:",
+    "esbuild": "catalog:",
+    "coc.nvim": "catalog:"
+  },
+  "activationEvents": [
+    "onLanguage:json"
+  ],
+  "contributes": {
+    "configuration": {
+      "type": "object",
+      "title": "npm-workspaces configuration",
+      "properties": {
+        "npm-workspaces.enable": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable npm-workspaces extension"
+        }
+      }
+    }
+  }
+}

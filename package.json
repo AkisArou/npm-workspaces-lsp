@@ -1,23 +1,17 @@
 {
-	"name": "npm-workspaces-lsp",
-	"description": "npm workspaces auto-completion in package.json files",
-	"version": "0.0.0",
-	"author": "AkisArou",
-	"license": "MIT",
-	"workspaces": ["packages/**"],
-	"scripts": {
-		"build-ls": "npm run build -w npm-workspaces-language-server"
-	},
-	"dependencies": {
-		"vscode-languageserver": "^9.0.1",
-		"vscode-languageserver-textdocument": "^1.0.11",
-		"typescript": "5.3.2",
-		"workspace-tools": "^0.36.3",
-		"yaml": "2.4.5"
-	},
-	"devDependencies": {
-		"@types/node": "18.x",
-		"tsup": "^8.0.1",
-		"prettier": "*"
-	}
+  "name": "npm-workspaces-lsp",
+  "description": "npm workspaces auto-completion in package.json files",
+  "version": "0.0.0",
+  "author": "AkisArou",
+  "license": "MIT",
+  "scripts": {
+    "build-lsp": "pnpm --filter npm-workspaces-language-server build",
+    "build-vscode": "pnpm --filter npm-workspaces-autocompletion-vscode build",
+    "build-coc": "pnpm --filter npm-workspaces-autocompletion-coc build"
+  },
+  "devDependencies": {
+    "prettier": "catalog:",
+    "esbuild": "catalog:"
+  },
+  "packageManager": "pnpm@9.15.0+sha512.76e2379760a4328ec4415815bcd6628dee727af3779aaa4c914e3944156c4299921a89f976381ee107d41f12cfa4b66681ca9c718f0668fa0831ed4c6d8ba56c"
 }
