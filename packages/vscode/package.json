@@ -4,6 +4,10 @@
   "description": "npm, yarn and pnpm workspaces auto-completion in package.json files",
   "version": "0.0.1",
   "author": "AkisArou <akisarou90@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AkisArou/npm-workspaces-lsp"
+  },
   "license": "MIT",
   "main": "./dist/extension.js",
   "engines": {
@@ -13,11 +17,10 @@
     "lsp"
   ],
   "scripts": {
-    "vscode:prepublish": "npm run package",
     "compile": "npm run check-types && node esbuild.mjs",
     "watch:esbuild": "node esbuild.mjs --watch",
     "watch:tsc": "tsc --noEmit --watch --project tsconfig.json",
-    "package": "npm run check-types && node esbuild.mjs --production",
+    "package": "npm run check-types && node esbuild.mjs --production && pnpx @vscode/vsce package --no-dependencies",
     "check-types": "tsc --noEmit"
   },
   "dependencies": {
@@ -27,7 +30,9 @@
   "devDependencies": {
     "@types/node": "catalog:",
     "typescript": "catalog:",
-    "esbuild": "catalog:"
+    "esbuild": "catalog:",
+    "@vscode/vsce": "catalog:",
+    "@types/vscode": "*"
   },
   "activationEvents": [
     "onLanguage:json"
