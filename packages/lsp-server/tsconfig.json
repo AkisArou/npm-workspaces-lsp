@@ -1,11 +1,3 @@
 {
-  "compilerOptions": {
-    "target": "ES2016",
-    "module": "commonjs",
-    "esModuleInterop": true,
-    "strict": true,
-    "declaration": true
-  },
-  "include": ["src"],
-  "exclude": ["node_modules"]
+  "extends": "../../tsconfig.base.json"
 }

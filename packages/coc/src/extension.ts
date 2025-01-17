@@ -1,8 +1,8 @@
 import {
-  ExtensionContext,
+  type ExtensionContext,
   LanguageClient,
-  LanguageClientOptions,
-  ServerOptions,
+  type LanguageClientOptions,
+  type ServerOptions,
   TransportKind,
   workspace
 } from "coc.nvim";

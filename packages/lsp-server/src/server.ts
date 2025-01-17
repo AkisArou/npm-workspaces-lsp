@@ -1,25 +1,23 @@
 #!/usr/bin/env node
 
+import fs from "node:fs";
+import path from "node:path";
+import { readdir } from "node:fs/promises";
+
 import {
-  CompletionItemKind,
-  Diagnostic,
+  type Diagnostic,
+  type InitializeResult,
   DiagnosticSeverity,
-  InitializeResult,
+  CompletionItemKind,
   ProposedFeatures,
   TextDocumentSyncKind,
   TextDocuments,
   createConnection
 } from "vscode-languageserver/node";
 
-import { TextDocument } from "vscode-languageserver-textdocument";
-
-import YAML from "yaml";
-
 import * as tools from "workspace-tools";
-
-import fs from "fs";
-import path from "path";
-import { readdir } from "fs/promises";
+import { TextDocument } from "vscode-languageserver-textdocument";
+import YAML from "yaml";
 
 type WorkspacesType = "npm-yarn" | "pnpm";
 
@@ -145,11 +143,21 @@ function findDependenciesPosition(
   let match;
   while ((match = regex.exec(content)) !== null) {
     const section = match[1];
+
+    if (!section) {
+      continue;
+    }
+
     let startIndex = match.index + match[0].indexOf("{");
     const dependencyRegex = /"([^"]+)"\s*:/g;
     let depMatch;
     while ((depMatch = dependencyRegex.exec(section)) !== null) {
       const depName = depMatch[1];
+
+      if (!depName) {
+        continue;
+      }
+
       const start = startIndex + depMatch.index + 2; // +2 for the quote etc..
       const end = start + depName.length;
       positions[depName] = { name: depName, start, end };
@@ -190,6 +198,11 @@ async function validateTextDocument(textDocument: TextDocument): Promise<void> {
           .filter(d => d.includes("/"))
           .flatMap(async d => {
             const scope = d.split("/")[0];
+
+            if (!scope) {
+              return null;
+            }
+
             try {
               const dir = await readdir(path.join(nodeModulesPath, scope));
               return dir.map(v => `${scope}/${v}`);
@@ -197,6 +210,7 @@ async function validateTextDocument(textDocument: TextDocument): Promise<void> {
               const dir = await readdir(
                 path.join(workspaceRoot ?? "", "node_modules", scope)
               );
+
               return dir.map(v => `${scope}/${v}`);
             }
           })
@@ -215,6 +229,10 @@ async function validateTextDocument(textDocument: TextDocument): Promise<void> {
     for (const depName in deps) {
       if (!depNames.has(depName)) {
         const dep = deps[depName];
+
+        if (!dep) {
+          continue;
+        }
 
         diagnostics.push({
           severity: DiagnosticSeverity.Warning,
