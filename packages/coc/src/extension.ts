@@ -34,8 +34,7 @@ export async function activate(context: ExtensionContext): Promise<void> {
     "coc-npm-workspaces",
     "coc npm workspaces",
     serverOptions,
-    clientOptions,
-    true
+    clientOptions
   );
 
   client.start();

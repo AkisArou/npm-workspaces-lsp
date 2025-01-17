@@ -33,8 +33,7 @@ export function activate(context: ExtensionContext) {
     "coc-npm-workspaces",
     "coc npm workspaces",
     serverOptions,
-    clientOptions,
-    true
+    clientOptions
   );
 
   client.start();
