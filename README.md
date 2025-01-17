@@ -31,7 +31,7 @@
 - With Plug
 
 ```vim
-  Plug 'AkisArou/npm-workspaces-lsp', {'do': 'pnpm install --frozen-lockfile && pnpm run build-coc'}
+  Plug 'AkisArou/npm-workspaces-lsp', {'do': 'pnpm install && pnpm run build-coc'}
 ```
 
 - Set runtime path for coc.vim
