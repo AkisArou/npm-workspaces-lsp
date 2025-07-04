@@ -12,7 +12,11 @@ import {
   ProposedFeatures,
   TextDocumentSyncKind,
   TextDocuments,
-  createConnection
+  createConnection,
+  Location,
+  Position,
+  Range,
+  TextDocumentPositionParams
 } from "vscode-languageserver/node";
 
 import * as tools from "workspace-tools";
@@ -53,6 +57,8 @@ if (!workspacesType) {
   throw new Error("Not using workspaces");
 }
 
+const workspaces = tools.getWorkspaces(process.cwd());
+
 const dependencies = (() => {
   if (!workspaceRoot || workspacesType === "npm-yarn") {
     return [];
@@ -74,8 +80,6 @@ const dependencies = (() => {
 })();
 
 const completionItems = (() => {
-  const workspaces = tools.getWorkspaces(process.cwd());
-
   const packageProtocol = workspacesType === "npm-yarn" ? "*" : "workspace:*";
 
   const workspaceItems = workspaces.map(w => ({
@@ -108,6 +112,7 @@ connection.onInitialize(_ => {
     capabilities: {
       textDocumentSync: TextDocumentSyncKind.Full,
       inlineCompletionProvider: true,
+      definitionProvider: true,
       completionProvider: {
         // triggerCharacters: ["@"],
         completionItem: {
@@ -124,6 +129,64 @@ connection.onInitialize(_ => {
 connection.onCompletion(_textDocumentPosition => {
   return completionItems;
 });
+
+connection.onDefinition(
+  async (params: TextDocumentPositionParams): Promise<Location[] | null> => {
+    if (!workspaceRoot) {
+      return null;
+    }
+
+    const document = documents.get(params.textDocument.uri);
+    if (!document) return null;
+
+    const uri = params.textDocument.uri;
+    const text = document.getText();
+    const lines = text.split(/\r?\n/g);
+    const line = lines[params.position.line];
+
+    // Check if it's a dependency line in package.json
+    const match = line?.match(/"([^"]+)":\s*"[^"]+"/);
+    if (!match) return null;
+
+    const packageName = match[1];
+
+    if (!packageName) {
+      return null;
+    }
+
+    // Try node_modules
+    let targetPath = path.join(
+      workspaceRoot,
+      "node_modules",
+      packageName,
+      "package.json"
+    );
+
+    if (!fs.existsSync(targetPath)) {
+      // Check if it's in a local workspace (e.g., yarn/npm workspaces)
+      const workspacePkg = workspaces.find(
+        workspace => workspace.name === packageName
+      );
+
+      if (workspacePkg) {
+        targetPath = path.join(workspacePkg.path, "package.json");
+      } else {
+        return null;
+      }
+    }
+
+    return [
+      Location.create(
+        pathToUri(targetPath),
+        Range.create(Position.create(0, 0), Position.create(0, 0))
+      )
+    ];
+  }
+);
+
+function pathToUri(p: string): string {
+  return "file://" + p;
+}
 
 documents.onDidOpen(evt => {
   connection.console.log(`Opened ${evt.document.uri}`);
