@@ -118,6 +118,6 @@ function makeCompletionItem(depName: string, value: string) {
     label: `"${depName}"`,
     kind: CompletionItemKind.Module,
     data: depName,
-    insertText: `"${depName}": "catalog:${value}"`
+    insertText: `"${depName}": ${value}`
   };
 }
