@@ -1,6 +1,6 @@
 import * as tools from "workspace-tools";
 import {
-  detectPackageManagerByLockfile,
+  detectPackageManager,
   lockfiles
 } from "./detect-package-manager.js";
 import { watchFile } from "node:fs";
@@ -12,7 +12,7 @@ export function createWorkspacesProvider(workspaceRoot: string) {
   let workspaces = tools.getWorkspaces(workspaceRoot);
 
   function watch() {
-    const packageManager = detectPackageManagerByLockfile(workspaceRoot);
+    const packageManager = detectPackageManager(workspaceRoot);
 
     if (!packageManager) {
       return;

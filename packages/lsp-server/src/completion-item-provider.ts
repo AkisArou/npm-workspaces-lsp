@@ -1,8 +1,11 @@
 import { getCatalogsFromWorkspaceManifest } from "@pnpm/catalogs.config";
 import { readWorkspaceManifest } from "@pnpm/workspace.read-manifest";
 import { type CompletionItem, CompletionItemKind } from "vscode-languageserver";
-import { detectPackageManagerByLockfile } from "./detect-package-manager.js";
+import { detectPackageManager } from "./detect-package-manager.js";
 import type { WorkspacesGetter } from "./workspaces-provider.js";
+import path from "node:path";
+import { readFile } from "node:fs/promises";
+import { existsSync } from "node:fs";
 
 type CompletionItemProvider = () => Promise<CompletionItem[]>;
 
@@ -10,13 +13,15 @@ export function createCompletionItemProvider(
   workspaceRoot: string,
   workspacesGetter: WorkspacesGetter
 ): CompletionItemProvider {
-  switch (detectPackageManagerByLockfile(workspaceRoot)) {
+  switch (detectPackageManager(workspaceRoot)) {
     case "yarn":
       return createYarnCompletionItemProvider(workspacesGetter);
     case "pnpm":
       return createPnpmCompletionItemProvider(workspaceRoot, workspacesGetter);
     case "npm":
       return createNpmCompletionItemProvider(workspacesGetter);
+    case "bun":
+      return createBunCompletionItemProvider(workspaceRoot, workspacesGetter);
     case undefined:
       return () => Promise.resolve([]);
   }
@@ -66,6 +71,41 @@ function createPnpmCompletionItemProvider(
             makeCompletionItem(dep, `catalog:${catalogNameValue}`)
           );
         });
+      }
+    }
+
+    return [...workspaceItems, ...dependencyItems];
+  };
+}
+function createBunCompletionItemProvider(
+  workspaceRoot: string,
+  workspacesGetter: WorkspacesGetter
+): CompletionItemProvider {
+  return async function getCompletionItems() {
+    const workspaceItems = workspacesGetter().map(w =>
+      makeCompletionItem(w.name, "workspace:*")
+    );
+
+    let dependencyItems: CompletionItem[] = [];
+
+    const rootPackageJsonPath = path.join(workspaceRoot, "package.json");
+
+    if (!existsSync(rootPackageJsonPath)) return workspaceItems;
+
+    const rootPackageJson: {
+      workspaces?: {
+        catalog?: Record<string, string>;
+        catalogs: Record<string, Record<string, string>>;
+      };
+    } = JSON.parse(await readFile(rootPackageJsonPath, "utf8"));
+
+    for (const dep in rootPackageJson.workspaces?.catalog) {
+      dependencyItems.push(makeCompletionItem(dep, `catalog:`));
+    }
+
+    for (const catalog in rootPackageJson.workspaces?.catalogs) {
+      for (const dep in rootPackageJson.workspaces.catalogs[catalog]) {
+        dependencyItems.push(makeCompletionItem(dep, `catalog:${catalog}`));
       }
     }
 

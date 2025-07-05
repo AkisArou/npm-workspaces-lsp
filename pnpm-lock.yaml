@@ -18,9 +18,6 @@ catalogs:
     '@vscode/vsce':
       specifier: 3.6.0
       version: 3.6.0
-    coc.nvim:
-      specifier: ^0.0.83-next.18
-      version: 0.0.83-next.18
     prettier:
       specifier: 3.4.2
       version: 3.4.2
@@ -47,19 +44,6 @@ importers:
       prettier:
         specifier: 'catalog:'
         version: 3.4.2
-
-  packages/coc:
-    dependencies:
-      npm-workspaces-language-server:
-        specifier: workspace:*
-        version: link:../lsp-server
-    devDependencies:
-      '@types/node':
-        specifier: 'catalog:'
-        version: 22.16.0
-      coc.nvim:
-        specifier: 'catalog:'
-        version: 0.0.83-next.18(@types/node@22.16.0)
       typescript:
         specifier: 'catalog:'
         version: 5.8.3
@@ -450,12 +434,6 @@ packages:
 
   chownr@1.1.4:
     resolution: {integrity: sha512-jJ0bqzaylmJtVnNgzTeSOs8DPavpbYgEr/b0YL8/2GO3xJEhInFmhKMUnEJQjZumK7KXGFhUy89PrsJWlakBVg==}
-
-  coc.nvim@0.0.83-next.18:
-    resolution: {integrity: sha512-BZ1a+lnvQ/l7WzoRy97oYubDnYkX+vyAN2GhrKzWMc4d8YujOcOCjaeRv6Ogn7Bvoc5rM9X88CPuOoE0iP1ceQ==}
-    engines: {node: '>=16.18.0'}
-    peerDependencies:
-      '@types/node': ^16.18.0
 
   cockatiel@3.2.1:
     resolution: {integrity: sha512-gfrHV6ZPkquExvMh9IOkKsBzNDk6sDuZ6DdBGUBkvFnTCqCxzpuq48RySgP0AnaqQkw2zynOFj9yly6T1Q2G5Q==}
@@ -1836,10 +1814,6 @@ snapshots:
 
   chownr@1.1.4:
     optional: true
-
-  coc.nvim@0.0.83-next.18(@types/node@22.16.0):
-    dependencies:
-      '@types/node': 22.16.0
 
   cockatiel@3.2.1: {}
 

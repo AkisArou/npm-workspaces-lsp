@@ -34,7 +34,7 @@
     "noUncheckedSideEffectImports": true,
     "libReplacement": false,
     "outDir": "${configDir}/dist",
-    "tsBuildInfoFile": "${configDir}/dist/.tsbuildinfo"
+    "tsBuildInfoFile": "${configDir}/node_modules/dist/.tsbuildinfo"
   },
   "include": ["${configDir}/src/**/*"]
 }
