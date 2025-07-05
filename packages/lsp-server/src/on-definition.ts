@@ -39,33 +39,45 @@ export function createOnDefinition(
       return null;
     }
 
-    // Try node_modules
-    let targetPath = path.join(
+    // Default is root node_modules
+    const rootNodeModulesPath = path.join(
       workspaceRoot,
       "node_modules",
       packageName,
       "package.json"
     );
 
-    if (!fs.existsSync(targetPath)) {
-      // Check if it's in a local workspace (e.g., yarn/npm workspaces)
-      const workspacePkg = workspaces.find(
-        workspace => workspace.name === packageName
-      );
+    const foundWorkspace = workspaces.find(
+      workspace => workspace.name === packageName
+    );
 
-      if (workspacePkg) {
-        targetPath = path.join(workspacePkg.path, "package.json");
-      } else {
-        return null;
-      }
-    }
+    const workspacePath = foundWorkspace
+      ? path.join(foundWorkspace.path, "package.json")
+      : undefined;
 
-    return [
-      Location.create(
-        pathToUri(targetPath),
-        Range.create(Position.create(0, 0), Position.create(0, 0))
-      )
-    ];
+    const localNodeModulePath = path.join(
+      params.textDocument.uri.replace("package.json", ""),
+      "node_modules",
+      packageName,
+      "package.json"
+    );
+
+    const resolvedPaths = [
+      workspacePath,
+      localNodeModulePath,
+      rootNodeModulesPath
+    ].filter(p => p !== undefined && fs.existsSync(p));
+
+    const firstPath = resolvedPaths[0];
+
+    return firstPath
+      ? [
+          Location.create(
+            pathToUri(firstPath),
+            Range.create(Position.create(0, 0), Position.create(0, 0))
+          )
+        ]
+      : null;
   };
 
   function pathToUri(p: string): string {
