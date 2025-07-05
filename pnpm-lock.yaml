@@ -6,6 +6,12 @@ settings:
 
 catalogs:
   default:
+    '@pnpm/catalogs.config':
+      specifier: 1000.0.2
+      version: 1000.0.2
+    '@pnpm/workspace.read-manifest':
+      specifier: 1000.2.0
+      version: 1000.2.0
     '@types/node':
       specifier: 20.x
       version: 20.17.14
@@ -72,6 +78,12 @@ importers:
 
   packages/lsp-server:
     dependencies:
+      '@pnpm/catalogs.config':
+        specifier: 'catalog:'
+        version: 1000.0.2
+      '@pnpm/workspace.read-manifest':
+        specifier: 'catalog:'
+        version: 1000.2.0
       typescript:
         specifier: 'catalog:'
         version: 5.7.3
@@ -335,6 +347,26 @@ packages:
   '@nodelib/fs.walk@1.2.8':
     resolution: {integrity: sha512-oGB+UxlgWcgQkgwo8GcEGwemoTFt3FIO9ababBmaGwXIoBKZ+GTy0pP185beGg7Llih/NSHSV2XAs1lnznocSg==}
     engines: {node: '>= 8'}
+
+  '@pnpm/catalogs.config@1000.0.2':
+    resolution: {integrity: sha512-2GCYZwxmgw6w0bpB71VbbXapgIcSSFOF9vnS+YLyTdy8JaIYoag2XkhXP1cMu24THPRXeo/zKTyziEsqgr1u8w==}
+    engines: {node: '>=18.12'}
+
+  '@pnpm/constants@1001.1.0':
+    resolution: {integrity: sha512-xb9dfSGi1qfUKY3r4Zy9JdC9+ZeaDxwfE7HrrGIEsBVY1hvIn6ntbR7A97z3nk44yX7vwbINNf9sizTp0WEtEw==}
+    engines: {node: '>=18.12'}
+
+  '@pnpm/error@1000.0.2':
+    resolution: {integrity: sha512-2SfE4FFL73rE1WVIoESbqlj4sLy5nWW4M/RVdHvCRJPjlQHa9MH7m7CVJM204lz6I+eHoB+E7rL3zmpJR5wYnQ==}
+    engines: {node: '>=18.12'}
+
+  '@pnpm/types@1000.6.0':
+    resolution: {integrity: sha512-6PsMNe98VKPGcg6LnXSW/LE3YfJ77nj+bPKiRjYRWAQLZ+xXjEQRaR0dAuyjCmchlv4wR/hpnMVRS21/fCod5w==}
+    engines: {node: '>=18.12'}
+
+  '@pnpm/workspace.read-manifest@1000.2.0':
+    resolution: {integrity: sha512-fltpq8ooksNkw5JE7ZrE3A10r10GExn5uK4yB578iXSOmgV5VOsvG0jTbvZiGns2Pgt5qzkBAwwqQq1DRTo1mQ==}
+    engines: {node: '>=18.12'}
 
   '@types/node@20.17.14':
     resolution: {integrity: sha512-w6qdYetNL5KRBiSClK/KWai+2IMEJuAj+EujKCumalFOwXtvOXaEan9AuwcRID2IcOIAWSIfR495hBtgKlx2zg==}
@@ -998,6 +1030,10 @@ packages:
     resolution: {integrity: sha512-y3bGgqKj3QBdxLbLkomlohkvsA8gdAiUQlSBJnBhfn+BPxg4bc62d8TcBW15wavDfgexCgccckhcZvywyQYPOw==}
     hasBin: true
 
+  read-yaml-file@2.1.0:
+    resolution: {integrity: sha512-UkRNRIwnhG+y7hpqnycCL/xbTk7+ia9VuVTC0S+zVbwd65DI9eUpRMfsWIGrCWxTU/mi+JW8cHQCrv+zfCbEPQ==}
+    engines: {node: '>=10.13'}
+
   read@1.0.7:
     resolution: {integrity: sha512-rSOKNYUmaxy0om1BNjMN4ezNT6VKK+2xF4GBhc81mkH7L60i6dp8qPYrkndNLT3QPphoII3maL9PVC9XmhHwVQ==}
     engines: {node: '>=0.8'}
@@ -1091,6 +1127,10 @@ packages:
   strip-ansi@7.1.0:
     resolution: {integrity: sha512-iq6eVVI64nQQTRYq2KtEg2d2uU7LElhTJwsH4YzIHZshxlgZms/wIc4VoDQTlG/IvVIrBKG06CrZnp0qv7hkcQ==}
     engines: {node: '>=12'}
+
+  strip-bom@4.0.0:
+    resolution: {integrity: sha512-3xurFv5tEgii33Zi8Jtp55wEIILR9eh34FAW00PZf+JnSsTmV/ioewSgQl97JHvgjoRGwPShsWm+IdrxB35d0w==}
+    engines: {node: '>=8'}
 
   strip-json-comments@2.0.1:
     resolution: {integrity: sha512-4gB8na07fecVVkOI6Rs4e7T6NOTki5EmL7TUduTs6bu3EdnSycntVJ4re8kgZA+wx9IueI2Y11bfbgwtzuE0KQ==}
@@ -1404,6 +1444,25 @@ snapshots:
     dependencies:
       '@nodelib/fs.scandir': 2.1.5
       fastq: 1.18.0
+
+  '@pnpm/catalogs.config@1000.0.2':
+    dependencies:
+      '@pnpm/error': 1000.0.2
+
+  '@pnpm/constants@1001.1.0': {}
+
+  '@pnpm/error@1000.0.2':
+    dependencies:
+      '@pnpm/constants': 1001.1.0
+
+  '@pnpm/types@1000.6.0': {}
+
+  '@pnpm/workspace.read-manifest@1000.2.0':
+    dependencies:
+      '@pnpm/constants': 1001.1.0
+      '@pnpm/error': 1000.0.2
+      '@pnpm/types': 1000.6.0
+      read-yaml-file: 2.1.0
 
   '@types/node@20.17.14':
     dependencies:
@@ -2147,6 +2206,11 @@ snapshots:
       strip-json-comments: 2.0.1
     optional: true
 
+  read-yaml-file@2.1.0:
+    dependencies:
+      js-yaml: 4.1.0
+      strip-bom: 4.0.0
+
   read@1.0.7:
     dependencies:
       mute-stream: 0.0.8
@@ -2248,6 +2312,8 @@ snapshots:
   strip-ansi@7.1.0:
     dependencies:
       ansi-regex: 6.1.0
+
+  strip-bom@4.0.0: {}
 
   strip-json-comments@2.0.1:
     optional: true

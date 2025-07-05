@@ -22,7 +22,8 @@
     "vscode-languageserver-textdocument": "catalog:",
     "typescript": "catalog:",
     "workspace-tools": "catalog:",
-    "yaml": "catalog:"
+    "@pnpm/workspace.read-manifest": "catalog:",
+    "@pnpm/catalogs.config": "catalog:"
   },
   "devDependencies": {
     "@types/node": "catalog:",

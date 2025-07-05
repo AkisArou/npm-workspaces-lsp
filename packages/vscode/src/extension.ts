@@ -30,8 +30,8 @@ export function activate(context: ExtensionContext) {
   };
 
   client = new LanguageClient(
-    "coc-npm-workspaces",
-    "coc npm workspaces",
+    "npm-workspaces-vscode",
+    "npm workspaces vscode",
     serverOptions,
     clientOptions
   );

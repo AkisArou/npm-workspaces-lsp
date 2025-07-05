@@ -1,7 +1,7 @@
 {
-  "name": "npm-workspaces-autocompletion-vscode",
-  "displayName": "npm workspaces autocompletion",
-  "description": "npm, yarn and pnpm workspaces auto-completion in package.json files",
+  "name": "npm-workspaces-vscode",
+  "displayName": "npm workspaces lsp client",
+  "description": "npm, yarn and pnpm workspaces lsp",
   "version": "0.0.1",
   "author": "AkisArou <akisarou90@gmail.com>",
   "repository": {
