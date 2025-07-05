@@ -1,14 +1,14 @@
 import { readdir } from "node:fs/promises";
-import path from "path/win32";
+import path from "path";
 import {
-  Connection,
+  type Connection,
   Diagnostic,
   DiagnosticSeverity,
-  TextDocumentChangeEvent
+  type TextDocumentChangeEvent
 } from "vscode-languageserver";
 import { TextDocument } from "vscode-languageserver-textdocument";
 
-export function createValidateTextDocument(
+export function createValidateDependencies(
   workspaceRoot: string,
   connection: Connection
 ) {
@@ -35,7 +35,7 @@ export function createValidateTextDocument(
       const depNames = await (async () => {
         const flat = await Promise.all([
           readdir(nodeModulesPath),
-          readdir(path.join(workspaceRoot ?? "", "node_modules"))
+          readdir(path.join(workspaceRoot, "node_modules"))
         ]);
 
         const scoped = await Promise.all(

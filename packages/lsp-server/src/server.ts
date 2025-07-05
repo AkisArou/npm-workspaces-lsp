@@ -8,10 +8,11 @@ import {
 } from "vscode-languageserver/node";
 
 import { TextDocument } from "vscode-languageserver-textdocument";
-import { createOnDefinition } from "./on-definition";
+import { createOnDefinition } from "./on-definition.js";
 import * as tools from "workspace-tools";
-import { createValidateTextDocument } from "./validate-dependencies";
-import { createCompletionItemProvider } from "./completion-item-provider";
+import { createValidateDependencies } from "./validate-dependencies.js";
+import { createCompletionItemProvider } from "./completion-item-provider.js";
+import { createWorkspacesProvider } from "./workspaces-provider.js";
 
 const workspaceRoot = tools.getWorkspaceRoot(process.cwd());
 
@@ -19,7 +20,7 @@ if (!workspaceRoot) {
   throw new Error(`No workspace root for ${process.cwd()}`);
 }
 
-const workspaces = tools.getWorkspaces(workspaceRoot);
+const { getWorkspaces, watch } = createWorkspacesProvider(workspaceRoot);
 
 const connection = createConnection(ProposedFeatures.all);
 
@@ -43,13 +44,15 @@ connection.onInitialize(_ => ({
 }));
 
 connection.onCompletion(
-  createCompletionItemProvider(workspaceRoot, workspaces)
+  createCompletionItemProvider(workspaceRoot, getWorkspaces)
 );
 
 connection.onDefinition(
-  createOnDefinition(workspaceRoot, workspaces, documents)
+  createOnDefinition(workspaceRoot, getWorkspaces, documents)
 );
 
-documents.onDidOpen(createValidateTextDocument(workspaceRoot, connection));
+documents.onDidOpen(createValidateDependencies(workspaceRoot, connection));
+
+connection.onInitialized(watch);
 
 connection.listen();

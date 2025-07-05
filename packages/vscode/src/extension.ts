@@ -1,32 +1,21 @@
-import { type ExtensionContext, workspace } from "vscode";
+import { type ExtensionContext } from "vscode";
 import {
   type ServerOptions,
   type LanguageClientOptions,
-  TransportKind,
-  LanguageClient
+  LanguageClient,
+  TransportKind
 } from "vscode-languageclient/node";
 
 let client: LanguageClient;
 
-export function activate(context: ExtensionContext) {
-  const module = context.asAbsolutePath("./dist/server.js");
-
+export function activate(_: ExtensionContext) {
   const serverOptions: ServerOptions = {
-    run: {
-      module,
-      transport: TransportKind.pipe
-    },
-    debug: {
-      module,
-      transport: TransportKind.pipe
-    }
+    command: "npm-workspaces-lsp",
+    transport: TransportKind.stdio
   };
 
   const clientOptions: LanguageClientOptions = {
-    documentSelector: [{ scheme: "file", pattern: "**/package.json" }],
-    synchronize: {
-      fileEvents: workspace.createFileSystemWatcher("**/package.json")
-    }
+    documentSelector: [{ scheme: "file", pattern: "**/package.json" }]
   };
 
   client = new LanguageClient(

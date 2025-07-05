@@ -1,5 +1,6 @@
 {
   "name": "npm-workspaces-vscode",
+  "type": "module",
   "displayName": "npm workspaces lsp client",
   "description": "npm, yarn and pnpm workspaces lsp",
   "version": "0.0.1",
@@ -9,7 +10,8 @@
     "url": "https://github.com/AkisArou/npm-workspaces-lsp"
   },
   "license": "MIT",
-  "main": "./dist/extension.js",
+  "main": "./dist/src/extension.js",
+  "exports": "./dist/src/extension.js",
   "engines": {
     "vscode": "^1.96.0"
   },
@@ -17,11 +19,9 @@
     "lsp"
   ],
   "scripts": {
-    "compile": "npm run check-types && node esbuild.mjs",
-    "watch:esbuild": "node esbuild.mjs --watch",
-    "watch:tsc": "tsc --noEmit --watch --project tsconfig.json",
-    "package": "npm run check-types && node esbuild.mjs --production && pnpx @vscode/vsce package --no-dependencies",
-    "check-types": "tsc --noEmit"
+    "build": "tsc -b",
+    "watch": "tsc -b --watch",
+    "package": "pnpm build && pnpx @vscode/vsce package --no-dependencies"
   },
   "dependencies": {
     "npm-workspaces-language-server": "workspace:*",
@@ -30,24 +30,10 @@
   "devDependencies": {
     "@types/node": "catalog:",
     "typescript": "catalog:",
-    "esbuild": "catalog:",
     "@vscode/vsce": "catalog:",
     "@types/vscode": "*"
   },
   "activationEvents": [
     "onLanguage:json"
-  ],
-  "contributes": {
-    "configuration": {
-      "type": "object",
-      "title": "npm-workspaces configuration",
-      "properties": {
-        "npm-workspaces.enable": {
-          "type": "boolean",
-          "default": true,
-          "description": "Enable npm-workspaces extension"
-        }
-      }
-    }
-  }
+  ]
 }

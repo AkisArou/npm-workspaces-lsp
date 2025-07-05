@@ -1,43 +1,53 @@
 import { getCatalogsFromWorkspaceManifest } from "@pnpm/catalogs.config";
 import { readWorkspaceManifest } from "@pnpm/workspace.read-manifest";
-import { CompletionItem, CompletionItemKind } from "vscode-languageserver";
-import * as tools from "workspace-tools";
-import * as fs from "node:fs";
+import { type CompletionItem, CompletionItemKind } from "vscode-languageserver";
+import { detectPackageManagerByLockfile } from "./detect-package-manager.js";
+import type { WorkspacesGetter } from "./workspaces-provider.js";
 
 type CompletionItemProvider = () => Promise<CompletionItem[]>;
 
-function detectPackageManagerByLockfile() {
-  if (fs.existsSync("yarn.lock")) return "yarn";
-  if (fs.existsSync("pnpm-lock.yaml")) return "pnpm";
-  if (fs.existsSync("package-lock.json")) return "npm";
-
-  return "unknown";
-}
-
 export function createCompletionItemProvider(
   workspaceRoot: string,
-  workspaces: tools.WorkspaceInfo
+  workspacesGetter: WorkspacesGetter
 ): CompletionItemProvider {
-  switch (detectPackageManagerByLockfile()) {
+  switch (detectPackageManagerByLockfile(workspaceRoot)) {
     case "yarn":
+      return createYarnCompletionItemProvider(workspacesGetter);
     case "pnpm":
+      return createPnpmCompletionItemProvider(workspaceRoot, workspacesGetter);
     case "npm":
-    case "unknown":
-      return createPnpmCompletionItemProvider(workspaceRoot, workspaces);
+      return createNpmCompletionItemProvider(workspacesGetter);
+    case undefined:
+      return () => Promise.resolve([]);
   }
 }
 
-export function createPnpmCompletionItemProvider(
-  workspaceRoot: string,
-  workspaces: tools.WorkspaceInfo
+function createNpmCompletionItemProvider(
+  workspacesGetter: WorkspacesGetter
 ): CompletionItemProvider {
   return async function getCompletionItems() {
-    const workspaceItems = workspaces.map(w => ({
-      label: `"${w.name}"`,
-      kind: CompletionItemKind.Module,
-      data: w.name,
-      insertText: `"${w.name}": "workspace:*"`
-    }));
+    return workspacesGetter().map(w => makeCompletionItem(w.name, "*"));
+  };
+}
+
+function createYarnCompletionItemProvider(
+  workspacesGetter: WorkspacesGetter
+): CompletionItemProvider {
+  return async function getCompletionItems() {
+    return workspacesGetter().map(w =>
+      makeCompletionItem(w.name, "workspace:*")
+    );
+  };
+}
+
+function createPnpmCompletionItemProvider(
+  workspaceRoot: string,
+  workspacesGetter: WorkspacesGetter
+): CompletionItemProvider {
+  return async function getCompletionItems() {
+    const workspaceItems = workspacesGetter().map(w =>
+      makeCompletionItem(w.name, "workspace:*")
+    );
 
     let dependencyItems: CompletionItem[] = [];
 
@@ -52,16 +62,22 @@ export function createPnpmCompletionItemProvider(
         const deps = Object.keys(catalogs[catalog]);
 
         deps.forEach(dep => {
-          dependencyItems.push({
-            label: `"${dep}"`,
-            kind: CompletionItemKind.Module,
-            data: dep,
-            insertText: `"${dep}": "catalog:${catalogNameValue}"`
-          });
+          dependencyItems.push(
+            makeCompletionItem(dep, `catalog:${catalogNameValue}`)
+          );
         });
       }
     }
 
     return [...workspaceItems, ...dependencyItems];
+  };
+}
+
+function makeCompletionItem(depName: string, value: string) {
+  return {
+    label: `"${depName}"`,
+    kind: CompletionItemKind.Module,
+    data: depName,
+    insertText: `"${depName}": "catalog:${value}"`
   };
 }

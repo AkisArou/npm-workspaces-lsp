@@ -1,21 +1,20 @@
 {
   "name": "npm-workspaces-language-server",
+  "type": "module",
   "description": "lsp server for npm, yarn and pnpm workspaces auto-completion in package.json files",
   "version": "0.2.1",
   "author": "AkisArou <akisarou90@gmail.com>",
   "license": "MIT",
-  "main": "dist/server.js",
-  "module": "dist/server.mjs",
+  "exports": "./dist/src/server.js",
   "bin": {
-    "npm-workspaces-lsp": "dist/server.js"
+    "npm-workspaces-lsp": "./dist/src/server.js"
   },
   "engines": {
     "node": "*"
   },
   "scripts": {
-    "build": "node esbuild.mjs",
-    "watch": "node esbuild.mjs --watch",
-    "lint": "tsc"
+    "build": "tsc -b",
+    "watch": "tsc -b --watch"
   },
   "dependencies": {
     "vscode-languageserver": "catalog:",
@@ -27,7 +26,6 @@
   },
   "devDependencies": {
     "@types/node": "catalog:",
-    "typescript": "catalog:",
-    "esbuild": "catalog:"
+    "typescript": "catalog:"
   }
 }

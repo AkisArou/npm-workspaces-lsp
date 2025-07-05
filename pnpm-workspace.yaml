@@ -2,17 +2,15 @@ packages:
   - packages/**
 
 catalog:
-  "@types/node": "20.x"
-  "@vscode/vsce": 3.2.1
-  "@types/vscode": ^1.96.0
+  "@types/node": "22.x"
+  "@vscode/vsce": 3.6.0
+  "@types/vscode": 1.101.0
   workspace-tools: ^0.38.1
-  vscode-languageserver: ^9.0.1
-  vscode-languageserver-textdocument: ^1.0.12
-  vscode-languageclient: ^9.0.0
-  typescript: 5.7.3
+  vscode-languageserver: 10.0.0-next.13
+  vscode-languageserver-textdocument: 1.0.12
+  vscode-languageclient: 10.0.0-next.16
+  typescript: 5.8.3
   prettier: 3.4.2
   coc.nvim: ^0.0.83-next.18
-  esbuild: ^0.24.0
-  tsup: 8.3.5
   "@pnpm/workspace.read-manifest": 1000.2.0
   "@pnpm/catalogs.config": 1000.0.2

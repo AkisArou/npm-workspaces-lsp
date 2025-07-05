@@ -1,18 +1,18 @@
 import {
-  TextDocumentPositionParams,
+  type TextDocumentPositionParams,
   Location,
   Range,
   Position,
   TextDocuments
 } from "vscode-languageserver";
 import { TextDocument } from "vscode-languageserver-textdocument";
-import { WorkspaceInfo } from "workspace-tools";
 import * as fs from "node:fs";
 import path from "node:path";
+import type { WorkspacesGetter } from "./workspaces-provider.js";
 
 export function createOnDefinition(
   workspaceRoot: string,
-  workspaces: WorkspaceInfo,
+  workspacesGetter: WorkspacesGetter,
   documents: TextDocuments<TextDocument>
 ) {
   return async function onDefinition(
@@ -47,7 +47,7 @@ export function createOnDefinition(
       "package.json"
     );
 
-    const foundWorkspace = workspaces.find(
+    const foundWorkspace = workspacesGetter().find(
       workspace => workspace.name === packageName
     );
 

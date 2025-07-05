@@ -1,0 +1,7 @@
+{
+  "references": [
+    { "path": "./packages/coc" },
+    { "path": "./packages/lsp-server" },
+    { "path": "./packages/vscode/" }
+  ]
+}
